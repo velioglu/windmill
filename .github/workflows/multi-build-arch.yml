@@ -72,15 +72,6 @@ jobs:
         run: |
           echo "ee_repo_ref=$(cat ./backend/ee-repo-ref.txt)" >> "$GITHUB_ENV"
 
-      - uses: actions/checkout@v4
-        if: ${{ inputs.checkout_ee }}
-        with:
-          repository: windmill-labs/windmill-ee-private
-          path: ./windmill-ee-private
-          ref: ${{ env.ee_repo_ref }}
-          token: ${{ secrets.WINDMILL_EE_PRIVATE_ACCESS }}
-          fetch-depth: ${{ inputs.fetch_depth }}
-
       - name: Run command after checkout
         if: ${{ inputs.after_checkout_command }}
         run: ${{ inputs.after_checkout_command }}
