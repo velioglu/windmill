@@ -1,4 +1,4 @@
-name: Build multi-platform Docker image - 12
+name: Build multi-platform Docker image - 14
 
 on:
   workflow_call:
@@ -59,8 +59,8 @@ jobs:
         include:
           - runner: ubicloud-standard-${{ inputs.build_runner_cpus }}
             platform: linux/amd64
-          - runner: ubicloud-standard-${{ inputs.build_runner_cpus }}
-            platform: linux/amd64
+          # - runner: ubicloud-standard-${{ inputs.build_runner_cpus }}
+          #   platform: linux/amd64
 
     steps:
       - name: Check out code
@@ -76,44 +76,505 @@ jobs:
         if: ${{ inputs.after_checkout_command }}
         run: ${{ inputs.after_checkout_command }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Create test files
+        run: |
+          mkdir -p /tmp/cache
+          for i in {0..199}; do
+            # Use shuf to get true random number between 50MB and 200MB
+            size=$(shuf -i 52428800-209715200 -n 1)
+            # Create file with random content of calculated size
+            dd if=/dev/urandom of="/tmp/cache/file-$i" bs=$size count=1
+            echo "Created file-$i with size: $(du -h /tmp/cache/file-$i | cut -f1)"
+          done
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
+      - name: Cache file-0
+        uses: actions/cache@v4
         with:
-          images: ${{ inputs.registry }}/${{ inputs.image_name }}
-          tags: ${{ inputs.metadata_tags }}
-          labels: ${{ inputs.metadata_labels }}
+          path: /tmp/cache/file-0
+          key: file-0-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-0-cache-${{ runner.os }}-
 
-      - name: Login to registry
-        uses: docker/login-action@v3
+      - name: Cache file-1
+        uses: actions/cache@v4
         with:
-          registry: ${{ inputs.registry }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/cache/file-1
+          key: file-1-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-1-cache-${{ runner.os }}-
 
-      - name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v6
+      - name: Cache file-2
+        uses: actions/cache@v4
         with:
-          context: .
-          platforms: ${{ matrix.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ inputs.build_args }}
-          cache-from: type=gha,scope=ubicloud-${{ matrix.runner }}-${{ inputs.name }}
-          cache-to: type=gha,mode=max,scope=ubicloud-${{ matrix.runner }}-${{ inputs.name }}
-          outputs:
-            type=image,name=${{ inputs.registry }}/${{ inputs.image_name
-            }},push-by-digest=true,name-canonical=true,push=true
+          path: /tmp/cache/file-2
+          key: file-2-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-2-cache-${{ runner.os }}-
+
+      - name: Cache file-3
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-3
+          key: file-3-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-3-cache-${{ runner.os }}-
+
+      - name: Cache file-4
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-4
+          key: file-4-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-4-cache-${{ runner.os }}-
+
+      - name: Cache file-5
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-5
+          key: file-5-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-5-cache-${{ runner.os }}-
+
+      - name: Cache file-6
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-6
+          key: file-6-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-6-cache-${{ runner.os }}-
+
+      - name: Cache file-7
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-7
+          key: file-7-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-7-cache-${{ runner.os }}-
+
+      - name: Cache file-8
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-8
+          key: file-8-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-8-cache-${{ runner.os }}-
+
+      - name: Cache file-9
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-9
+          key: file-9-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-9-cache-${{ runner.os }}-
+
+      - name: Cache file-10
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-10
+          key: file-10-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-10-cache-${{ runner.os }}-
+
+      - name: Cache file-11
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-11
+          key: file-11-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-11-cache-${{ runner.os }}-
+
+      - name: Cache file-12
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-12
+          key: file-12-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-12-cache-${{ runner.os }}-
+
+      - name: Cache file-13
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-13
+          key: file-13-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-13-cache-${{ runner.os }}-
+
+      - name: Cache file-14
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-14
+          key: file-14-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-14-cache-${{ runner.os }}-
+
+      - name: Cache file-15
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-15
+          key: file-15-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-15-cache-${{ runner.os }}-
+
+      - name: Cache file-16
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-16
+          key: file-16-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-16-cache-${{ runner.os }}-
+
+      - name: Cache file-17
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-17
+          key: file-17-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-17-cache-${{ runner.os }}-
+
+      - name: Cache file-18
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-18
+          key: file-18-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-18-cache-${{ runner.os }}-
+
+      - name: Cache file-19
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-19
+          key: file-19-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-19-cache-${{ runner.os }}-
+
+      - name: Cache file-20
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-20
+          key: file-20-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-20-cache-${{ runner.os }}-
+
+      - name: Cache file-21
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-21
+          key: file-21-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-21-cache-${{ runner.os }}-
+
+      - name: Cache file-22
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-22
+          key: file-22-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-22-cache-${{ runner.os }}-
+
+      - name: Cache file-23
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-23
+          key: file-23-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-23-cache-${{ runner.os }}-
+
+      - name: Cache file-24
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-24
+          key: file-24-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-24-cache-${{ runner.os }}-
+
+      - name: Cache file-25
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-25
+          key: file-25-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-25-cache-${{ runner.os }}-
+
+      - name: Cache file-26
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-26
+          key: file-26-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-26-cache-${{ runner.os }}-
+
+      - name: Cache file-27
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-27
+          key: file-27-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-27-cache-${{ runner.os }}-
+
+      - name: Cache file-28
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-28
+          key: file-28-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-28-cache-${{ runner.os }}-
+
+      - name: Cache file-29
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-29
+          key: file-29-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-29-cache-${{ runner.os }}-
+
+      - name: Cache file-30
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-30
+          key: file-30-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-30-cache-${{ runner.os }}-
+
+      - name: Cache file-31
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-31
+          key: file-31-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-31-cache-${{ runner.os }}-
+
+      - name: Cache file-32
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-32
+          key: file-32-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-32-cache-${{ runner.os }}-
+
+      - name: Cache file-33
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-33
+          key: file-33-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-33-cache-${{ runner.os }}-
+
+      - name: Cache file-34
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-34
+          key: file-34-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-34-cache-${{ runner.os }}-
+
+      - name: Cache file-35
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-35
+          key: file-35-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-35-cache-${{ runner.os }}-
+
+      - name: Cache file-36
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-36
+          key: file-36-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-36-cache-${{ runner.os }}-
+
+      - name: Cache file-37
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-37
+          key: file-37-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-37-cache-${{ runner.os }}-
+
+      - name: Cache file-38
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-38
+          key: file-38-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-38-cache-${{ runner.os }}-
+
+      - name: Cache file-39
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-39
+          key: file-39-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-39-cache-${{ runner.os }}-
+
+      - name: Cache file-40
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-40
+          key: file-40-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-40-cache-${{ runner.os }}-
+
+      - name: Cache file-41
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-41
+          key: file-41-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-41-cache-${{ runner.os }}-
+
+      - name: Cache file-42
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-42
+          key: file-42-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-42-cache-${{ runner.os }}-
+
+      - name: Cache file-43
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-43
+          key: file-43-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-43-cache-${{ runner.os }}-
+
+      - name: Cache file-44
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-44
+          key: file-44-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-44-cache-${{ runner.os }}-
+
+      - name: Cache file-45
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-45
+          key: file-45-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-45-cache-${{ runner.os }}-
+
+      - name: Cache file-46
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-46
+          key: file-46-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-46-cache-${{ runner.os }}-
+
+      - name: Cache file-47
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-47
+          key: file-47-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-47-cache-${{ runner.os }}-
+
+      - name: Cache file-48
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-48
+          key: file-48-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-48-cache-${{ runner.os }}-
+
+      - name: Cache file-49
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-49
+          key: file-49-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-49-cache-${{ runner.os }}-
+
+      - name: Cache file-50
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-50
+          key: file-50-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-50-cache-${{ runner.os }}-
+
+      - name: Cache file-51
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-51
+          key: file-51-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-51-cache-${{ runner.os }}-
+
+      - name: Cache file-52
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-52
+          key: file-52-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-52-cache-${{ runner.os }}-
+
+      - name: Cache file-53
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-53
+          key: file-53-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-53-cache-${{ runner.os }}-
+
+      - name: Cache file-54
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-54
+          key: file-54-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-54-cache-${{ runner.os }}-
+
+      - name: Cache file-55
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-55
+          key: file-55-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-55-cache-${{ runner.os }}-
+
+      - name: Cache file-56
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-56
+          key: file-56-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-56-cache-${{ runner.os }}-
+
+      - name: Cache file-57
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-57
+          key: file-57-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-57-cache-${{ runner.os }}-
+
+      - name: Cache file-58
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-58
+          key: file-58-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-58-cache-${{ runner.os }}-
+
+      - name: Cache file-59
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-59
+          key: file-59-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-59-cache-${{ runner.os }}-
+
+      - name: Cache file-60
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/file-60
+          key: file-60-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            file-60-cache-${{ runner.os }}-
 
       - name: Print cache proxy logs
         run: sudo cat /var/log/cacheproxy.log
         if: always()
-        
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
