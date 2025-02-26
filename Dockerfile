@@ -53,63 +53,63 @@ COPY ./backend ./
 #     --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 #     CARGO_NET_GIT_FETCH_WITH_CLI=true cargo chef prepare --recipe-path recipe.json
 
-# FROM rust_base AS builder
-# ARG features=""
+FROM rust_base AS builder
+ARG features=""
 
-# COPY --from=planner /windmill/recipe.json recipe.json
+COPY --from=planner /windmill/recipe.json recipe.json
 
-# RUN apt-get update && apt-get install -y libxml2-dev=2.9.* libxmlsec1-dev=1.2.* clang=1:14.0-55.* libclang-dev=1:14.0-55.* cmake=3.25.* && \
-#     apt-get clean && \
-#     rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libxml2-dev=2.9.* libxmlsec1-dev=1.2.* clang=1:14.0-55.* libclang-dev=1:14.0-55.* cmake=3.25.* && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # RUN --mount=type=cache,target=/usr/local/cargo/registry \
 #     --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 #     CARGO_NET_GIT_FETCH_WITH_CLI=true RUST_BACKTRACE=1 cargo chef cook --release --features "$features" --recipe-path recipe.json
 
-# COPY ./openflow.openapi.yaml /openflow.openapi.yaml
-# COPY ./backend ./
+COPY ./openflow.openapi.yaml /openflow.openapi.yaml
+COPY ./backend ./
 
 # RUN mkdir -p /frontend
 
-# COPY --from=frontend /frontend/build /frontend/build
-# COPY --from=frontend /backend/windmill-api/openapi-deref.yaml ./windmill-api/openapi-deref.yaml
-# COPY .git/ .git/
+COPY --from=frontend /frontend/build /frontend/build
+COPY --from=frontend /backend/windmill-api/openapi-deref.yaml ./windmill-api/openapi-deref.yaml
+COPY .git/ .git/
 
 # RUN --mount=type=cache,target=/usr/local/cargo/registry \
 #     --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 #     CARGO_NET_GIT_FETCH_WITH_CLI=true cargo build --release --features "$features"
 
 
-# FROM ${DEBIAN_IMAGE}
+FROM ${DEBIAN_IMAGE}
 
-# ARG TARGETPLATFORM
-# ARG POWERSHELL_VERSION=7.3.5
-# ARG POWERSHELL_DEB_VERSION=7.3.5-1
-# ARG KUBECTL_VERSION=1.28.7
-# ARG HELM_VERSION=3.14.3
-# ARG GO_VERSION=1.22.5
-# ARG APP=/usr/src/app
-# ARG WITH_POWERSHELL=true
-# ARG WITH_KUBECTL=true
-# ARG WITH_HELM=true
-# ARG WITH_GIT=true
+ARG TARGETPLATFORM
+ARG POWERSHELL_VERSION=7.3.5
+ARG POWERSHELL_DEB_VERSION=7.3.5-1
+ARG KUBECTL_VERSION=1.28.7
+ARG HELM_VERSION=3.14.3
+ARG GO_VERSION=1.22.5
+ARG APP=/usr/src/app
+ARG WITH_POWERSHELL=true
+ARG WITH_KUBECTL=true
+ARG WITH_HELM=true
+ARG WITH_GIT=true
 
-# # To change latest stable version:
-# # 1. Change placeholder in instanceSettings.ts
-# # 2. Change LATEST_STABLE_PY in dockerfile
-# # 3. Change #[default] annotation for PyVersion in backend
-# ARG LATEST_STABLE_PY=3.11.10
-# ENV UV_PYTHON_INSTALL_DIR=/tmp/windmill/cache/py_runtime
-# ENV UV_PYTHON_PREFERENCE=only-managed
-# ENV UV_TOOL_BIN_DIR=/usr/local/bin
+# To change latest stable version:
+# 1. Change placeholder in instanceSettings.ts
+# 2. Change LATEST_STABLE_PY in dockerfile
+# 3. Change #[default] annotation for PyVersion in backend
+ARG LATEST_STABLE_PY=3.11.10
+ENV UV_PYTHON_INSTALL_DIR=/tmp/windmill/cache/py_runtime
+ENV UV_PYTHON_PREFERENCE=only-managed
+ENV UV_TOOL_BIN_DIR=/usr/local/bin
 
-# ENV PATH /usr/local/bin:/root/.local/bin:$PATH
+ENV PATH /usr/local/bin:/root/.local/bin:$PATH
 
 
-# RUN apt-get update \
-#     && apt-get install -y --no-install-recommends netbase tzdata ca-certificates wget curl jq unzip build-essential unixodbc xmlsec1  software-properties-common \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends netbase tzdata ca-certificates wget curl jq unzip build-essential unixodbc xmlsec1  software-properties-common \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # RUN if [ "$WITH_GIT" = "true" ]; then \
 #     apt-get update  -y \
