@@ -51,7 +51,7 @@ jobs:
         'windmill-labs/windmill-test' }}
       fetch_depth: 0
       push_image: true
-      build_runner_cpus: 16
+      build_runner_cpus: 2
       metadata_flavor: |
         latest=false
       metadata_labels: |
